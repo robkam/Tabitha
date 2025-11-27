@@ -1,0 +1,62 @@
+# This file defines a GitHub Actions workflow for Continuous Integration (CI).
+# It automates a series of quality checks for every code change.
+
+name: CI (Lint, Format, Build, and Test)
+
+# This section defines what triggers the workflow to run.
+on:
+  push:
+    branches: ['main'] # Run on every push to the main branch.
+  pull_request:
+    branches: ['main'] # Run on every Pull Request that targets the main branch.
+
+jobs:
+  # This defines our primary validation job.
+  quality-checks:
+    name: Code Quality Checks
+    # Use the latest stable version of Ubuntu as the virtual machine.
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Get the code from the repository.
+      # This action checks out your repository under $GITHUB_WORKSPACE, so your job can access it.
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up the correct version of Node.js.
+      # This action installs a specific version of Node.js and configures the PATH.
+      # Caching npm dependencies will speed up subsequent builds.
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x' # Use a Long-Term Support (LTS) version of Node.
+          cache: 'npm'
+
+      # Step 3: Install dependencies.
+      # 'npm ci' is a "clean install". It's faster and more reliable for CI environments
+      # because it installs dependencies exactly as specified in your package-lock.json file.
+      - name: Install Dependencies
+        run: npm ci
+
+      # Step 4: Check for code formatting issues with Prettier.
+      # The '--check' flag tells Prettier to see if any files *would* be reformatted.
+      # If any file needs reformatting, this step will fail, enforcing a consistent style.
+      - name: Check Formatting
+        run: npm run format -- --check
+
+      # Step 5: Run the linter (ESLint) to check for code quality and potential bugs.
+      # This command runs the 'lint' script we defined in our package.json.
+      - name: Lint Code
+        run: npm run lint
+
+      # Step 6: Build the extension to ensure it compiles correctly with TypeScript.
+      # This runs the 'build' script from package.json, which includes type checking via `tsc`.
+      - name: Build Extension
+        run: npm run build
+        # A separate `npm run type-check` could also be added here if more granular feedback is desired
+        # before the build step, but `npm run build` as configured already includes `tsc`.
+
+      # Step 7: Run the automated tests.
+      # This step uses Vitest, as defined in package.json's 'test' script.
+      - name: Run Tests
+        run: npm run test

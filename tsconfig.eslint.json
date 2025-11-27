@@ -1,0 +1,49 @@
+{
+  "extends": "./tsconfig.json", // Inherits all settings from the main tsconfig.json
+  "compilerOptions": {
+    // Override specific compiler options for ESLint's type-aware linting pass.
+    // By setting these to false, we let ESLint's '@typescript-eslint/no-unused-vars'
+    // rule handle the detection and reporting of unused variables, which is often
+    // more configurable (e.g., ignoring variables prefixed with '_').
+    // If these were true, 'tsc' (run by typescript-eslint) might error out on
+    // unused variables before ESLint's rule even gets a chance to run.
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+
+    // Other options are inherited from tsconfig.json.
+    // Ensure jsx/jsxImportSource are correctly inherited or set if not.
+    // From your tsconfig.json:
+    // "jsx": "react-jsx",
+    // "jsxImportSource": "preact"
+    // These should be inherited correctly via "extends".
+    // No need to repeat them unless you specifically want to override them for linting.
+
+    // 'baseUrl' and 'paths' are also inherited, which is important for module resolution during linting.
+
+    // 'noEmit' is true in the base tsconfig.json, which is fine for linting as we don't want
+    // ESLint's TypeScript pass to produce actual build artifacts.
+    // If 'noEmit' was false in the base, you might consider setting 'noEmit: true' here
+    // or using 'emitDeclarationOnly: true' if only types were needed by some advanced rule.
+    // But since base is noEmit: true, inheritance is fine.
+    "isolatedModules": false // Setting this to false for tsconfig.eslint.json can sometimes resolve
+                             // issues with type-aware linting across files that might not strictly
+                             // adhere to isolated module constraints when viewed by the linter as a whole project.
+                             // Your base tsconfig.json has isolatedModules: true.
+                             // For linting purposes, especially when including test files and configs,
+                             // relaxing this can be beneficial if you see related errors.
+                             // If no such errors, keeping it inherited (true) is fine.
+                             // Let's try setting it to false to be safe for broader linting.
+  },
+  "include": [
+    "src/**/*",         // All src files, including .ts, .tsx, .test.ts, .test.tsx
+    "*.ts",             // Root .ts files (e.g., vite.config.ts, vitest.config.ts)
+    "*.cjs",            // Root .cjs files (e.g., postcss.config.cjs)
+    "*.js"              // Root .js files (e.g., eslint.config.js)
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "coverage"
+    // Base tsconfig.json's "exclude" for tests is effectively overridden by the "include" here.
+  ]
+}

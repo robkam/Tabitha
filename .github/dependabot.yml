@@ -1,0 +1,22 @@
+# This is the configuration file for GitHub's Dependabot.
+# It tells Dependabot how to manage your project's dependencies.
+
+version: 2
+updates:
+  # This section defines rules for a specific package manager.
+  - package-ecosystem: 'npm' # We're managing Node.js packages with npm.
+    directory: '/' # The package.json is in the root of the repository.
+    schedule:
+      interval: 'daily' # Check for new updates once a day.
+    commit-message:
+      # Use a conventional commit prefix for clean commit history.
+      # This makes it easy to see which commits are dependency updates.
+      prefix: 'chore(deps)'
+    # Group patch and minor updates together into a single PR to reduce noise.
+    # Major updates will still get their own separate PRs.
+    groups:
+      npm-minor-patch:
+        applies-to: "version-updates"
+        update-types:
+          - "minor"
+          - "patch"
