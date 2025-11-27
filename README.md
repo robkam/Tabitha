@@ -1,5 +1,5 @@
-[!IMPORTANT]
-## **This project is no longer maintained. It is preserved here for anyone who may find it useful or wish to continue its development.**
+> [!IMPORTANT]
+> ## **This project is no longer maintained. It is preserved here for anyone who may find it useful or wish to continue its development.**
 
 
 # Tabitha Browser Extension
